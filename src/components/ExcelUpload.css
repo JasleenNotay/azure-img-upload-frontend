@@ -1,0 +1,46 @@
+
+.excel-upload-container {
+    text-align: center;
+    margin: 20px;
+  }
+  
+  .custom-file-upload {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+  
+  .custom-file-upload input[type="file"] {
+    display: none;
+  }
+  
+  .upload-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    display: inline-block;
+    border-radius: 5px;
+  }
+  
+  .upload-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .error-message {
+    color: red;
+  }
+  
+  .success-message {
+    color: green;
+  }
+  

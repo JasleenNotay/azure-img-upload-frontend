@@ -1,54 +1,68 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./ImageUpload.css";
 
-const ImageUpload = ({ setMessage }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [error, setError] = useState(null);
+const ImageUpload = () => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-    const allowedFileTypes = ["image/jpeg", "image/png", "image/jpg"];
-    const invalidFiles = files.filter(
-      (file) => !allowedFileTypes.includes(file.type)
-    );
-
-    if (invalidFiles.length > 0) {
-      setError("Invalid file type. Please select JPEG or PNG images.");
-    } else {
-      setSelectedFiles(files);
-      setError(null);
+    if (!selectedImage) {
+      alert("Please select an image");
+      return;
     }
-  };
 
-  const uploadImages = async () => {
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+
     try {
-      const formData = new FormData();
+      const response = await axios.post(
+        process.env.REACT_APP_UPLOAD_API,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      selectedFiles.forEach((file, index) => {
-        formData.append(`image${index + 1}`, file);
-      });
-
-      await axios.post("http://localhost:5000/upload-image", formData);
-      setMessage("Images uploaded successfully!");
+      console.log(response.data);
+      setMessage("Image uploaded successfully");
     } catch (error) {
-      console.error("Error uploading images:", error);
-      setMessage("Error uploading images.");
+      console.error(error);
+      setError("Error occurred during image upload");
+    } finally {
+      setIsUploading(false);
     }
   };
 
   return (
-    <div>
-      <input
-        type="file"
-        accept="image/jpeg, image/png, image/jpg"
-        multiple
-        onChange={handleFileChange}
-      />
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <button onClick={uploadImages} disabled={selectedFiles.length === 0}>
-        Upload Images
-      </button>
+    <div className="image-upload-container">
+      <h2>Image File Upload</h2>
+      <form onSubmit={handleSubmit}>
+        <label className="custom-file-upload">
+          <input
+            type="file"
+            name="file"
+            accept="image/jpeg, image/png, image/jpg"
+            onChange={(event) => setSelectedImage(event.target.files[0])}
+          />
+          Choose file
+        </label>
+        {error && <p className="error-message">{error}</p>}
+        {message && <p className="success-message">{message}</p>}
+        <button
+          type="submit"
+          disabled={!selectedImage || isUploading}
+          className="upload-button"
+        >
+          {isUploading ? "Uploading..." : "Upload Image"}
+        </button>
+      </form>
     </div>
   );
 };
